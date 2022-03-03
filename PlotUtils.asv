@@ -212,24 +212,16 @@ classdef PlotUtils < handle
             %       options to use if not listed in below options. Plot
             %       arguments are passed as follows:
             %       PlotArgs = {'Marker', 'o', 'LineWidth', 2}
-            %   - Scatter::<strong>Boolean</strong>: Toggles between line
-            %       and scatter plots.
             %   - Color::<strong>Char/String/Double</strong>: Line/Marker/Fill Color 
-            %       Possible Inputs:
-            %           - MATLAB Colors: 'r', 'c', etc.
-            %           - Hex Color Codes: '#ffffff'
-            %           - Color Series Index: 1, 2, 3, etc.
+            
             %   - Marker::<strong>Char/String</strong>: Self Explanatory
-            %   - MarkerSize::<strong>Char/String</strong>: Self Explanatory
-            %   - LineStyle::<strong>Char/String</strong>: Self Explanatory
-            %   - LineWidth::<strong>Char/String</strong>: Self Explanatory
-            %   - XLim::<strong>Vector{Double}(1,2)</strong>: Self Explanatory
-            %   - YLim::<strong>Vector{Double}(2,1)</strong>: Self Explanatory
-            %   - ZLim::<strong>Vector{Double}(2,1)</strong>: Self Explanatory
-            %   - YScale::<strong>Char/String</strong>: Self Explanatory
+            %   - Marker::<strong>Char/String</strong>: Self Explanatory
             % 
             % <strong>Outputs:</strong>
-            %   - None
+            %   - dX::<strong>Vector{Double}</strong>: Derivative of input vector at 
+            %       propagation time
+            % 
+            % Also see: OTHER
             
             % ========================= %
             %   ARGUMENT VARIFICATION   %
