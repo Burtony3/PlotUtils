@@ -22,9 +22,10 @@ classdef PlotUtils < handle
     end
     
     properties (Access = private, Hidden = true)
-        Dict        % Name-Index Pairs
-        TiledLayout % Subplot Layouts
-        UsingTiled  % Check Variable
+        Dict            % Name-Index Pairs
+        TiledLayout     % Subplot Layouts
+        UsingTiled      % Check Variable
+        ColorSchemeName % Saved Colorscheme
     end
     
     methods (Access = public)
@@ -51,6 +52,8 @@ classdef PlotUtils < handle
             else
                 name = opts.Name;
             end
+            
+            obj.ColorSchemeName = opts.ColorScheme;
             
             % APPLYING
             if ~strcmpi(opts.Recipe, 'nofig')
@@ -128,15 +131,16 @@ classdef PlotUtils < handle
             
             % APPLYING
             obj.Fig.Color = obj.Recipe.Color.bg;
-            obj.Ax.Color = obj.Recipe.Color.bg;
-            obj.Ax.XAxis.Color = obj.Recipe.Color.fg;
-            obj.Ax.YAxis.Color = obj.Recipe.Color.fg;
-            obj.Ax.ZAxis.Color = obj.Recipe.Color.fg;
-            obj.Ax.ColorOrder = hex2rgb(cellstr(obj.Recipe.Color.series));
-            obj.Ax.LineStyleOrder = {'-', '--', ':'};
+            obj.Ax(end).Color = obj.Recipe.Color.bg;
+            obj.Ax(end).XAxis.Color = obj.Recipe.Color.fg;
+            obj.Ax(end).YAxis.Color = obj.Recipe.Color.fg;
+            obj.Ax(end).ZAxis.Color = obj.Recipe.Color.fg;
+            obj.Ax(end).ColorOrder = hex2rgb(cellstr(obj.Recipe.Color.series));
+            obj.Ax(end).LineStyleOrder = {'-', '--', ':'};
             
-            % UPDATING CURRENT HANDLES
-            for i = 1:length(obj.Handles)
+            % UPDATING CURRENT HANDLES OF MOST RECENT AXIS
+            hNew = findall(obj.Handles, 'parent', obj.Ax(end));
+            for i = 1:length(hNew)
                 if i == 1
                     cidx = 1;
                 else
@@ -146,7 +150,7 @@ classdef PlotUtils < handle
                         cidx = cidx+1;
                     end
                 end
-                h = obj.Handles(i);
+                h = hNew(i);
                 h.Color = obj.Recipe.Color.series(cidx);
             end
         end
@@ -406,6 +410,7 @@ classdef PlotUtils < handle
             
             % SETTING TITLES
             if ~isempty(opts.Title)
+                if contains(opts.Title, '$'); opts.Title = obj.BoldMath(opts.Title); end
                 title(obj.Ax(end), strcat("\textbf{", opts.Title, '}'))
             end
             
@@ -575,6 +580,7 @@ classdef PlotUtils < handle
             
             % SETTING TITLES
             if ~isempty(opts.Title)
+                if contains(opts.Title, '$'); opts.Title = obj.BoldMath(opts.Title); end
                 title(obj.Ax(end), strcat("\textbf{", opts.Title, '}'))
             end
             
@@ -609,7 +615,11 @@ classdef PlotUtils < handle
         end
         
         %% UTILITIES 
-        function EnableSubPlots(obj, opts)
+        function InsetPlot(obj, opts)
+            
+        end
+        
+        function EnableSubplots(obj, opts)
             
             % ARGUMENT VARIFICATION
             arguments
@@ -633,7 +643,7 @@ classdef PlotUtils < handle
             
             t.TileSpacing = "compact";
             t.Padding = "compact";
-            t.TileIndexing = [opts.Direction, 'major'];
+            t.TileIndexing = [char(opts.Direction), 'major'];
             
             % TITLE
             if ~isempty(opts.Title)
@@ -670,6 +680,7 @@ classdef PlotUtils < handle
             
             % CREATING AXES
             obj.Ax = gca;
+            obj.ColorScheme(obj.ColorSchemeName);
             obj.Update;
         end
         
@@ -682,6 +693,7 @@ classdef PlotUtils < handle
             
             % APPENDING AXES
             obj.Ax(end+1) = gca;
+            obj.ColorScheme(obj.ColorSchemeName);
             obj.Update;
         end
         
@@ -934,6 +946,24 @@ classdef PlotUtils < handle
     
     %% PRIVATE METHODS
     methods (Access = private, Hidden = true)
+        function str = BoldMath(~, str)
+            str = char(str);
+            idx = findS(str);
+            if mod(numel(idx), 2) ~= 0
+                error('Mismatch in number of $, must be divisible by 2')
+            end
+            for i = 1:size(idx, 1)
+
+                str = [str(1:idx(i, 1)-1), '\boldmath{', str(idx(i, 1):idx(i, 2)), '}', str(idx(i, 2)+1:end)];
+                idx = findS(str);
+            end
+
+            function idx = findS(str)                
+                idx = strfind(str, '$');
+                idx = reshape(idx, 2, []).';
+            end
+        end
+        
         function AddHandle(obj, h, name)
             if isempty(obj.Handles)
                 obj.Handles = h;
