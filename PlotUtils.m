@@ -129,29 +129,31 @@ classdef PlotUtils < handle
                     
             end
             
-            % APPLYING
-            obj.Fig.Color = obj.Recipe.Color.bg;
-            obj.Ax(end).Color = obj.Recipe.Color.bg;
-            obj.Ax(end).XAxis.Color = obj.Recipe.Color.fg;
-            obj.Ax(end).YAxis.Color = obj.Recipe.Color.fg;
-            obj.Ax(end).ZAxis.Color = obj.Recipe.Color.fg;
-            obj.Ax(end).ColorOrder = hex2rgb(cellstr(obj.Recipe.Color.series));
-            obj.Ax(end).LineStyleOrder = {'-', '--', ':'};
+            if ~isempty(obj.Ax)
+                % APPLYING
+                obj.Fig.Color = obj.Recipe.Color.bg;
+                obj.Ax(end).Color = obj.Recipe.Color.bg;
+                obj.Ax(end).XAxis.Color = obj.Recipe.Color.fg;
+                obj.Ax(end).YAxis.Color = obj.Recipe.Color.fg;
+                obj.Ax(end).ZAxis.Color = obj.Recipe.Color.fg;
+                obj.Ax(end).ColorOrder = hex2rgb(cellstr(obj.Recipe.Color.series));
+                obj.Ax(end).LineStyleOrder = {'-', '--', ':'};S
             
-            % UPDATING CURRENT HANDLES OF MOST RECENT AXIS
-            hNew = findall(obj.Handles, 'parent', obj.Ax(end));
-            for i = 1:length(hNew)
-                if i == 1
-                    cidx = 1;
-                else
-                    if cidx > length(obj.Recipe.Color.series)
+                % UPDATING CURRENT HANDLES OF MOST RECENT AXIS
+                hNew = findall(obj.Handles, 'parent', obj.Ax(end));
+                for i = 1:length(hNew)
+                    if i == 1
                         cidx = 1;
                     else
-                        cidx = cidx+1;
+                        if cidx > length(obj.Recipe.Color.series)
+                            cidx = 1;
+                        else
+                            cidx = cidx+1;
+                        end
                     end
+                    h = hNew(i);
+                    h.Color = obj.Recipe.Color.series(cidx);
                 end
-                h = hNew(i);
-                h.Color = obj.Recipe.Color.series(cidx);
             end
         end
         
