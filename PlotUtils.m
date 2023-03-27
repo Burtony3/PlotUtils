@@ -137,7 +137,7 @@ classdef PlotUtils < handle
                 obj.Ax(end).YAxis.Color = obj.Recipe.Color.fg;
                 obj.Ax(end).ZAxis.Color = obj.Recipe.Color.fg;
                 obj.Ax(end).ColorOrder = hex2rgb(cellstr(obj.Recipe.Color.series));
-                obj.Ax(end).LineStyleOrder = {'-', '--', ':'};S
+                obj.Ax(end).LineStyleOrder = {'-', '--', ':'};
             
                 % UPDATING CURRENT HANDLES OF MOST RECENT AXIS
                 hNew = findall(obj.Handles, 'parent', obj.Ax(end));
@@ -824,6 +824,7 @@ classdef PlotUtils < handle
                 opts.Path {mustBeTextScalar} = runningFileLocation
                 opts.Name {mustBeTextScalar} = obj.Name
                 opts.Size {mustBeVector} = [0 0];
+                opts.Resolution = 200
             end
             
             % MAKING SURE PLOT IS UP TO DATE
@@ -856,7 +857,7 @@ classdef PlotUtils < handle
             
             % SAVING
             if contains(opts.Ext, 'png')
-                exportgraphics(obj.Fig, [opts.Path, opts.Name, '.png'], 'Resolution', 200);
+                exportgraphics(obj.Fig, [opts.Path, opts.Name, '.png'], 'Resolution', opts.Resolution);
             elseif contains(opts.Ext, 'eps')
                 exportgraphics(obj.Fig, [opts.Path, opts.Name, '.eps']);
             end
