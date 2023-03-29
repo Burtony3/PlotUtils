@@ -260,6 +260,7 @@ classdef PlotUtils < handle
                 opts.YLim {mustBeVector} = [0 0]
                 opts.ZLim {mustBeVector} = [0 0]
                 opts.YScale {mustBeTextScalar} = 'linear'
+                opts.Alpha = 1
             end
             
             
@@ -322,7 +323,7 @@ classdef PlotUtils < handle
             if ~isempty(opts.Color)
                 if ischar(opts.Color) || isstring(opts.Color)
                     color = opts.Color;
-                elseif length(opts.Color) == 3
+                elseif length(opts.Color) >= 3
                     color = opts.Color;
                     if any(color > 1); color = color/255; end
                 elseif isscalar(opts.Color)
@@ -381,6 +382,8 @@ classdef PlotUtils < handle
             % ==================== %
             %   ALIGNING VISUALS   %
             % ==================== %
+
+            plt.Color(4) = opts.Alpha;
             
             % SETTING LIMITS
             if strcmpi(obj.Recipe, 'trajectory') 
@@ -823,7 +826,7 @@ classdef PlotUtils < handle
                 opts.Ext {mustBeTextScalar} = '.png'
                 opts.Path {mustBeTextScalar} = runningFileLocation
                 opts.Name {mustBeTextScalar} = obj.Name
-                opts.Size {mustBeVector} = [0 0];
+                opts.Size {mustBeVector} = [0 0]
                 opts.Resolution = 200
             end
             
@@ -1134,3 +1137,7 @@ switch range
 end
 end
 
+function folder = runningFileLocation()
+    folder = fileparts(matlab.desktop.editor.getActiveFilename);
+    folder = [folder, '\'];
+end
