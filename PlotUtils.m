@@ -458,6 +458,8 @@ classdef PlotUtils < handle
                 opts.Subtitle {mustBeTextScalar} = ''
                 opts.Labels = []
                 opts.Levels {mustBeNumeric} = []
+                opts.ConstColor = 'r'
+                opts.LineStyle = ''
             end
             
             % ================== %
@@ -513,6 +515,10 @@ classdef PlotUtils < handle
                     linewidth = obj.Recipe.Line.Width;
                     
             end
+
+            if ~isempty(opts.LineStyle)
+                linestyle = opts.LineStyle;
+            end
             
             % LEGEND VISIBILITY
             if isempty(opts.Name); vis = 'off'; else; vis = 'on'; end
@@ -530,8 +536,24 @@ classdef PlotUtils < handle
             
             % HANDLING CONSTRAINTS PLOTS
             if strcmpi(opts.Type, 'constraint') && ~strcmpi(opts.Type, 'surf')
+                C = obj.Ax(end).ColorOrder;
+                
+                if ~isempty(opts.ConstColor)
+                    if ischar(opts.ConstColor) || isstring(opts.ConstColor)
+                        color = opts.ConstColor;
+                    elseif length(opts.ConstColor) >= 3
+                        color = opts.Color;
+                        if any(color > 1); color = color/255; end
+                    elseif isscalar(opts.ConstColor)
+                        color = C(opts.ConstColor, :);
+                    else
+                        warning('Color option not correct format')
+                    end
+                end
+
                 lvls = [0 0];
-                plotOpts(end+1:end+4) = {'LevelList', lvls, 'LineColor', 'r'};
+                plotOpts(end+1:end+6) = {'LevelList', lvls, 'LineColor', color, ...
+                    'LineWidth', 2};
             end
             
             % ============ %
@@ -564,7 +586,7 @@ classdef PlotUtils < handle
             % ==================== %
             
             if ~strcmpi(opts.Type, 'surf')
-                axis equal tight
+%                 axis equal tight
             else
                 view(-40, 30);
                 dataRatios = obj.Ax(end).DataAspectRatio;
